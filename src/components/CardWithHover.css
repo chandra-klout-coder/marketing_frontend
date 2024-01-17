@@ -1,0 +1,15 @@
+.paragraph {
+  opacity: 0;
+  transition: opacity 2.5s ease-in-out;
+}
+
+.paragraph.visible {
+  opacity: 1;
+  display: block;
+}
+
+.paragraph.hide {
+  display: none;
+}
+
+
