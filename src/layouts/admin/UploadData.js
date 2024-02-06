@@ -5,7 +5,8 @@ import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
 import ReactPaginate from "react-paginate";
 
-function AllMember(props) {
+function UploadData(props) {
+
   const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState([]);
   const [filteredMembers, setFilteredMembers] = useState([]);
@@ -181,11 +182,11 @@ function AllMember(props) {
   return (
     <>
       <div className="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 className="h3 mb-0 text-gray-800">All Members</h1>
+        <h1 className="h3 mb-0 text-gray-800">Upload Data List</h1>
 
         <div className="d-none d-sm-inline-block shadow-sm">
           <Link
-            to={`/admin/add-member`}
+            to={`/admin/upload-member-data`}
             className="btn btn-sm btn-primary shadow-sm"
             style={{
               backgroundColor: "#F5007E",
@@ -194,7 +195,7 @@ function AllMember(props) {
               borderRadius: "12px",
             }}
           >
-            <i className="fa fa-solid fa-plus"></i> &nbsp; Add Member
+            <i className="fa fa-solid fa-user-plus"></i> &nbsp; Upload Member Data
           </Link>
         </div>
       </div>
@@ -203,7 +204,7 @@ function AllMember(props) {
         {/* <div className="col-md-12"> */}
         <div className="card shadow mb-4">
           <div className="card-header py-3">
-            <h6 className="m-0 font-weight-bold text-primary">All Members</h6>
+            <h6 className="m-0 font-weight-bold text-primary">All Member List</h6>
           </div>
           <div className="card-body">
             <div className="row pb-4">
@@ -289,4 +290,4 @@ function AllMember(props) {
   );
 }
 
-export default AllMember;
+export default UploadData;

@@ -19,8 +19,13 @@ import ResetPassword from "./components/ResetPassword";
 import MasterLayout from "./layouts/admin/MasterLayout";
 import ForgotPassword from "./components/ForgotPassword";
 import TermsAndConditions from "./components/TermsAndConditions";
+import { useSelector } from "react-redux";
+import Dashboard from "./layouts/admin/Dashboard";
 
-// axios.defaults.baseURL ="http://ec2-43-204-102-78.ap-south-1.compute.amazonaws.com"
+import { Provider } from "react-redux";
+import store from "./store";
+
+// axios.defaults.baseURL = "https://api.klout.club/";
 axios.defaults.baseURL = "http://localhost:8000/";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
@@ -38,27 +43,18 @@ axios.interceptors.request.use(function (config) {
 });
 
 function App() {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
   return (
     <div className="App">
       <Router basename="/">
         <Switch>
           <Route exact path="/" component={LandingHome} />
 
-          <Route path="/login">
-            {localStorage.getItem("auth_token") !== null ? (
-              <Redirect to="/admin/dashboard" />
-            ) : (
-              <Login />
-            )}
-          </Route>
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
 
-          <Route path="/register">
-            {localStorage.getItem("auth_token") !== null ? (
-              <Redirect to="/admin/dashboard" />
-            ) : (
-              <Register />
-            )}
-          </Route>
+          <AdminPrivateRoute path="/admin" name="Admin" />
 
           <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/reset-password" component={ResetPassword} />
@@ -66,14 +62,6 @@ function App() {
           <Route path="/terms-and-condition" component={TermsAndConditions} />
           <Route path="/unsubscribe" component={UnSubscribe} />
           <Route path="/403" component={Page403} />
-
-          {/* <Route
-            path="/admin"
-            name="Admin"
-            render={(props) => <MasterLayout {...props} />}
-          /> */}
-
-          <AdminPrivateRoute path="/admin" name="Admin" />
 
           <Route path="/404" component={Page404} />
 

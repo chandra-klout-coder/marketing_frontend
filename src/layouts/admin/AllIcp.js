@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Select, { components } from "react-select";
 import { useHistory, Link } from "react-router-dom";
 import swal from "sweetalert";
@@ -17,6 +17,8 @@ const MultiSelectDropdown = ({
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const selectRef = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +42,19 @@ const MultiSelectDropdown = ({
     );
     setFilteredData(filtered);
   }, [searchTerm, data]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (selectRef.current && !selectRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [selectRef]);
 
   const options = filteredData.map((item) => ({
     value: item.name,
@@ -71,7 +86,8 @@ const MultiSelectDropdown = ({
   };
 
   return (
-    <div className="multi-select-dropdown">
+    <div className="multi-select-dropdown" ref={selectRef}>
+      <label>Select {`${type}`} </label>
       <Select
         isMulti
         options={options}
@@ -85,7 +101,7 @@ const MultiSelectDropdown = ({
         components={{ Option, Menu }}
         menuIsOpen={isMenuOpen}
         onMenuOpen={() => setIsMenuOpen(true)}
-        onMenuClose={() => setIsMenuOpen(false)}
+        // onMenuClose={() => setIsMenuOpen(false)}
         blurInputOnSelect
       />
     </div>
@@ -98,6 +114,8 @@ const citiesApiUrl = process.env.REACT_APP_API_URL + "/api/cities";
 const jobtitlesApiUrl = process.env.REACT_APP_API_URL + "/api/jobtitles";
 const industriesApiUrl = process.env.REACT_APP_API_URL + "/api/industries";
 const companiesApiUrl = process.env.REACT_APP_API_URL + "/api/companies";
+const employeeApiUrl = process.env.REACT_APP_API_URL + "/api/employee-size";
+
 
 const AllIcp = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -109,6 +127,7 @@ const AllIcp = () => {
   const [selectedJobTitles, setSelectedJobTitles] = useState([]);
   const [selectedIndustries, setSelectedIndustries] = useState([]);
   const [selectedCompanies, setSelectedCompanies] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
 
   const handleSelectChange = (selectedValues, type) => {
     if (type === "country") {
@@ -123,6 +142,8 @@ const AllIcp = () => {
       setSelectedIndustries(selectedValues);
     } else if (type === "company") {
       setSelectedCompanies(selectedValues);
+    } else if (type === "employee-size") {
+      setSelectedEmployees(selectedValues);
     }
   };
 
@@ -135,6 +156,7 @@ const AllIcp = () => {
         industries: selectedIndustries,
         jobtitles: selectedJobTitles,
         companies: selectedCompanies,
+        employee_size: selectedEmployees
       });
 
       // Handle the response data as needed
@@ -261,8 +283,20 @@ const AllIcp = () => {
               </div>
 
               <div className="col-3">
+                <MultiSelectDropdown
+                  selectedOptions={selectedEmployees}
+                  onSelectChange={(values) =>
+                    handleSelectChange(values, "employee-size")
+                  }
+                  apiUrl={employeeApiUrl}
+                  type="employee-size"
+                />
+                {/* <div>Selected Options: {selectedCountries.join(", ")}</div> */}
+              </div>
+
+              <div className="col-3">
                 <button
-                  className="btn btn-primary btn-user"
+                  className="btn btn-primary btn-user mt-4"
                   style={{
                     backgroundColor: "#F5007E",
                     borderColor: "#F5007E",
@@ -279,7 +313,7 @@ const AllIcp = () => {
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : (
-                    "Search Now"
+                    "Save Now"
                   )}
                 </button>
               </div>

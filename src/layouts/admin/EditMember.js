@@ -1,31 +1,44 @@
 import React, { useState, useEffect } from "react";
+import { useHistory, Link } from "react-router-dom";
 import axios from "axios";
 import swal from "sweetalert";
-import { useHistory, Link } from "react-router-dom";
 
 import loadingGif from "../../assets/images/load.gif";
-import Defaultuser from "../../assets/images/defaultuser.png";
 
-function AddMember(props) {
+function EditMember(props) {
   const history = useHistory();
+
+  const member_id = props.match.params.id;
 
   const imageBaseUrl = process.env.REACT_APP_API_URL;
 
+  const [memberId, setMemberId] = useState("");
+
+
   const [errors, setErrors] = useState({});
+
   const [isLoading, setIsLoading] = useState(false);
 
-  const [step, setStep] = useState("1");
-
   const [formInput, setFormInput] = useState({
+    member_id: member_id,
     first_name: "",
     last_name: "",
     company: "",
     email: "",
     mobile_number: "",
-    step: 1,
-    mobile_otp: "",
-    email_otp: "",
   });
+
+  useEffect(() => {
+    axios.get(`/api/members/${member_id}`).then((res) => {
+      if (res.data.status === 200) {
+        setMemberId(res.data.data.id);
+        setFormInput(res.data.data);
+      } else if (res.data.status === 400) {
+        swal("Error", res.data.message, "error");
+        history.push("/admin/all-member");
+      }
+    });
+  }, [member_id]);
 
   const handleInput = (e) => {
     e.persist();
@@ -85,22 +98,6 @@ function AddMember(props) {
           fieldErrors[name] = "Maximum 50 Characters Allowed.";
         }
         break;
-
-      case "mobile_otp":
-        if (value !== "") {
-          if (!/^\d{6}$/.test(value)) {
-            fieldErrors[name] = "Valid OTP required";
-          }
-        }
-        break;
-
-      case "email_otp":
-        if (value !== "") {
-          if (!/^\d{6}$/.test(value)) {
-            fieldErrors[name] = "Valid OTP required";
-          }
-        }
-        break;
       default:
         break;
     }
@@ -116,6 +113,15 @@ function AddMember(props) {
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
     setFormInput((prevValidFields) => ({ ...prevValidFields, [name]: value }));
     e.target.classList.remove("is-invalid");
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+
+    setFormInput((prevData) => ({
+      ...prevData,
+      new_image: file,
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -180,61 +186,35 @@ function AddMember(props) {
       fieldErrors.company = "Maximum 50 Characters Allowed.";
     }
 
-    if (formInput.email_otp !== "") {
-      if (
-        formInput.email_otp.length === 0 ||
-        !/^\d{6}$/.test(formInput.email_otp)
-      ) {
-        fieldErrors.email = "Valid OTP required.";
-      }
-    }
-
-    if (formInput.mobile_otp !== "") {
-      if (
-        formInput.mobile_otp.length === 0 ||
-        !/^\d{6}$/.test(formInput.mobile_otp)
-      ) {
-        fieldErrors.mobile_otp = "Valid OTP required.";
-      }
-    }
-
     if (Object.keys(fieldErrors).length === 0) {
-
-      // setStep("2");
-
       setIsLoading(true);
 
       const formData = new FormData();
 
+      formData.append("id", formInput.member_id);
       formData.append("first_name", formInput.first_name);
       formData.append("last_name", formInput.last_name);
       formData.append("company", formInput.company);
       formData.append("email", formInput.email);
       formData.append("mobile_number", formInput.mobile_number);
-      formData.append("mobile_otp", formInput.mobile_otp);
-      formData.append("email_otp", formInput.email_otp);
-
-      formData.append("step", 2);
+      formData.append("_method", "PUT");
 
       axios
-        .post(`/api/members`, formData, {
+        .post(`/api/members/${member_id}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then((res) => {
           if (res.data.status === 200) {
-            
             swal("Success", res.data.message, "success");
 
             setFormInput({
               ...formInput,
+              member_id: "",
               first_name: "",
               last_name: "",
               company: "",
               email: "",
               mobile_number: "",
-              step: "",
-              mobile_otp: "",
-              email_otp: "",
             });
 
             setErrors({});
@@ -267,7 +247,7 @@ function AddMember(props) {
           }}
         >
           <div className="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 className="h3 mb-0 text-gray-800">Add Member </h1>
+            <h1 className="h3 mb-0 text-gray-800">Edit Member </h1>
             <Link
               to={`/admin/all-member`}
               className="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
@@ -288,19 +268,19 @@ function AddMember(props) {
         {/* <div className="col-md-12"> */}
         <div className="card shadow mb-4">
           <div className="card-header py-3">
-            <h6 className="m-0 font-weight-bold text-primary">Add Member</h6>
+            <h6 className="m-0 font-weight-bold text-primary">Edit Member</h6>
           </div>
           <div className="card-body">
             <div className="row">
               <div className="col-12">
-                <h5 className="text-center">Add Member Details</h5>
+                <h5 className="text-center">Edit Member Details</h5>
                 <hr />
                 <form
                   className="user mt-5"
                   onSubmit={handleSubmit}
                   encType="multipart/form-data"
                 >
-                  {/* First Name */}
+                  {/* Name */}
                   <div className="form-group row">
                     <label
                       forhtml="first_name"
@@ -308,7 +288,7 @@ function AddMember(props) {
                     >
                       Name
                     </label>
-                    <div className="col-12 col-lg-3 mb-2">
+                    <div className="col-12 col-lg-5 mb-2">
                       <input
                         type="text"
                         className={`form-control ${
@@ -334,7 +314,7 @@ function AddMember(props) {
                       )}
                     </div>
 
-                    <div className="col-12 col-lg-3">
+                    <div className="col-12 col-lg-5">
                       <input
                         type="text"
                         className={`form-control ${
@@ -361,7 +341,7 @@ function AddMember(props) {
                     </div>
                   </div>
 
-                  {/* Email */}
+                  {/* Event Venue  */}
                   <div className="form-group row">
                     <label
                       forhtml="email"
@@ -369,9 +349,10 @@ function AddMember(props) {
                     >
                       Email
                     </label>
-                    <div className="col-12 col-lg-6 mb-3 mb-sm-0">
+                    <div className="col-12 col-lg-5 mb-3 mb-sm-0">
                       <div className="form-group">
                         <input
+                          readOnly
                           type="email"
                           className={`form-control ${
                             errors.email ? "is-invalid" : ""
@@ -398,18 +379,19 @@ function AddMember(props) {
                     </div>
                   </div>
 
-                  {/* Mobile Number  */}
+                  {/* Phone Number  */}
                   <div className="form-group row">
                     <label
-                      forhtml="mobile_number"
+                      forhtml="phone_number"
                       className="col-12 col-lg-2 col-form-label"
                     >
                       Mobile Number
                     </label>
-                    <div className="col-12 col-lg-6 mb-3 mb-sm-0">
+                    <div className="col-12 col-lg-5 mb-3 mb-sm-0">
                       <div className="form-group">
                         <input
                           type="text"
+                          readOnly
                           className={`form-control ${
                             errors.mobile_number ? "is-invalid" : ""
                           }`}
@@ -448,7 +430,7 @@ function AddMember(props) {
                     >
                       Company
                     </label>
-                    <div className="col-12 col-lg-6 mb-3 mb-sm-0">
+                    <div className="col-12 col-lg-5 mb-3 mb-sm-0">
                       <div className="form-group">
                         <input
                           type="company"
@@ -477,88 +459,6 @@ function AddMember(props) {
                     </div>
                   </div>
 
-                  {/* Otp verificastion  */}
-
-                  {step === "2" && (
-                    <>
-                      {/* Mobile OTP */}
-                      <div className="form-group row">
-                        <label
-                          forhtml="mobile_otp"
-                          className="col-12 col-lg-2 col-form-label"
-                        >
-                          Mobile OTP
-                        </label>
-                        <div className="col-12 col-lg-2 mb-3 mb-sm-0">
-                          <div className="form-group">
-                            <input
-                              type="company"
-                              className={`form-control ${
-                                errors.mobile_otp ? "is-invalid" : ""
-                              }`}
-                              placeholder="Mobile OTP"
-                              name="mobile_otp"
-                              maxLength={6}
-                              value={formInput.mobile_otp}
-                              onChange={handleInput}
-                              onBlur={handleBlur}
-                              onFocus={handleInputFocus}
-                            />
-
-                            {errors.mobile_otp && (
-                              <div
-                                className="invalid-feedback"
-                                style={{
-                                  textAlign: "left",
-                                }}
-                              >
-                                {errors.mobile_otp}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Email OTP */}
-                      <div className="form-group row">
-                        <label
-                          forhtml="email_otp"
-                          className="col-12 col-lg-2 col-form-label"
-                        >
-                          Verify Email OTP
-                        </label>
-                        <div className="col-12 col-lg-2 mb-3 mb-sm-0">
-                          <div className="form-group">
-                            <input
-                              type="text"
-                              className={`form-control ${
-                                errors.email_otp ? "is-invalid" : ""
-                              }`}
-                              placeholder="Email OTP"
-                              name="email_otp"
-                              maxLength={6}
-                              value={formInput.email_otp}
-                              onChange={handleInput}
-                              onBlur={handleBlur}
-                              onFocus={handleInputFocus}
-                            />
-
-                            {errors.email_otp && (
-                              <div
-                                className="invalid-feedback"
-                                style={{
-                                  textAlign: "left",
-                                }}
-                              >
-                                {errors.email_otp}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
                   <div className="form-group row">
                     <label
                       forhtml="status"
@@ -571,11 +471,19 @@ function AddMember(props) {
                           backgroundColor: "#F5007E",
                           borderColor: "#F5007E",
                           fontSize: "14px",
-                          padding: "1% 4%",
+                          padding: "1% 6%",
                         }}
+                        disabled={isLoading}
                       >
-                        {step === "1" && <>{"Sent OTP Now"}</>}
-                        {step === "2" && <>{"Verify and Save"}</>}
+                        {isLoading ? (
+                          <img
+                            src={loadingGif}
+                            alt="Loading"
+                            style={{ width: "20px", height: "20px" }}
+                          />
+                        ) : (
+                          "Update"
+                        )}
                       </button>
                     </div>
                   </div>
@@ -589,4 +497,4 @@ function AddMember(props) {
   );
 }
 
-export default AddMember;
+export default EditMember;

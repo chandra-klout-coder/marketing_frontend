@@ -18,6 +18,7 @@ function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
   const history = useHistory();
 
   const logoutSubmit = (e) => {
+
     e.preventDefault();
 
     Swal.fire({
@@ -32,8 +33,10 @@ function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
       confirmButtonText: "Yes",
     }).then((result) => {
       if (result.isConfirmed) {
+
         axios.post(`/api/logout`).then(function (res) {
           if (res.data.status === 200) {
+
             localStorage.removeItem("auth_token");
             localStorage.removeItem("auth_name");
 
@@ -49,6 +52,7 @@ function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
             setTimeout(() => {
               window.location.reload();
             }, 2000);
+            
           }
         });
       }
@@ -150,7 +154,7 @@ function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
           >
             <div className="bg-white py-2 collapse-inner rounded">
               <Link to="/admin/all-icp" className="collapse-item">
-                All ICP
+                Major Campaign ROI
               </Link>
               <Link to="/admin/upload-account-list" className="collapse-item">
                 Upload Account List

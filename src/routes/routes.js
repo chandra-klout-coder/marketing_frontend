@@ -4,22 +4,16 @@ import Blank from "../layouts/admin/Blank";
 import Event from "../layouts/admin/Event";
 import Reports from "../layouts/admin/Reports";
 import GetHelp from "../layouts/admin/GetHelp";
-import AddCity from "../layouts/admin/AddCity";
 import Profile from "../layouts/admin/Profile";
-import AddState from "../layouts/admin/AddState";
 import AllEvent from "../layouts/admin/AllEvent";
 import Settings from "../layouts/admin/Settings";
 import AddSkills from "../layouts/admin/AddSkills";
 import ViewEvent from "../layouts/admin/ViewEvent";
 import EditEvent from "../layouts/admin/EditEvent";
 import Dashboard from "../layouts/admin/Dashboard";
-import AddCountry from "../layouts/admin/AddCountry";
-import AddCompany from "../layouts/admin/AddCompany";
 import AllReports from "../layouts/admin/AllReports";
 import ViewSponsor from "../layouts/admin/ViewSponsor";
 import AddSponsors from "../layouts/admin/AddSponsors";
-import AddJobTitle from "../layouts/admin/AddJobTitle";
-import AddIndustry from "../layouts/admin/AddIndustry";
 import AddAttendee from "../layouts/admin/AddAttendee";
 import AllContacts from "../layouts/admin/AllContacts";
 import AllSponsors from "../layouts/admin/AllSponsors";
@@ -44,6 +38,10 @@ import AllIcp from "../layouts/admin/AllIcp";
 import AddMember from "../layouts/admin/AddMember";
 import AllMember from "../layouts/admin/AllMember";
 import Express from "../layouts/admin/Express";
+import EditMember from "../layouts/admin/EditMember";
+import ViewMember from "../layouts/admin/ViewMember";
+import UploadData from "../layouts/admin/UploadData";
+import UploadMemberData from "../layouts/admin/UploadMemberData";
 
 const routes = [
   { path: "/admin", exact: true, name: "Admin", component: Dashboard },
@@ -73,7 +71,19 @@ const routes = [
     name: "AddMember",
     component: AddMember,
   },
+  {
+    path: "/admin/edit-member/:id",
+    exact: true,
+    name: "EditMember",
+    component: EditMember,
+  },
 
+  {
+    path: "/admin/view-member/:id",
+    exact: true,
+    name: "ViewMember",
+    component: ViewMember,
+  },
   {
     path: "/admin/express",
     exact: true,
@@ -87,25 +97,22 @@ const routes = [
     name: "AllIcp",
     component: AllIcp,
   },
+  {
+    path: "/admin/upload-account-list",
+    exact: true,
+    name: "UploadData",
+    component: UploadData,
+  },
+  {
+    path: "/admin/upload-member-data",
+    exact: true,
+    name: "UploadMemberData",
+    component: UploadMemberData,
+  },
 
-  {
-    path: "/admin/all-events",
-    exact: true,
-    name: "AllEvent",
-    component: AllEvent,
-  },
-  {
-    path: "/admin/view-event/:id",
-    exact: true,
-    name: "ViewEvent",
-    component: ViewEvent,
-  },
-  {
-    path: "/admin/edit-event/:id",
-    exact: true,
-    name: "EditEvent",
-    component: EditEvent,
-  },
+
+
+
   {
     path: "/admin/send-notification-attendee/:id",
     exact: true,
@@ -148,48 +155,12 @@ const routes = [
     name: "ViewAttendee",
     component: ViewAttendee,
   },
-  //Mapping Data
-  {
-    path: "/admin/add-country",
-    exact: true,
-    name: "AddCountry",
-    component: AddCountry,
-  },
-  {
-    path: "/admin/add-state",
-    exact: true,
-    name: "AddState",
-    component: AddState,
-  },
-  {
-    path: "/admin/add-city",
-    exact: true,
-    name: "AddCity",
-    component: AddCity,
-  },
+
   {
     path: "/admin/add-skills",
     exact: true,
     name: "AddSkills",
     component: AddSkills,
-  },
-  {
-    path: "/admin/add-industry",
-    exact: true,
-    name: "AddIndustry",
-    component: AddIndustry,
-  },
-  {
-    path: "/admin/add-company",
-    exact: true,
-    name: "AddCompany",
-    component: AddCompany,
-  },
-  {
-    path: "/admin/add-job-title",
-    exact: true,
-    name: "AddJobTitle",
-    component: AddJobTitle,
   },
 
   {
