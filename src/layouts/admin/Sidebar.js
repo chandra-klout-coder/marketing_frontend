@@ -14,11 +14,17 @@ import Home from "../../components/Home";
 import AllEvent from "./AllEvent";
 import Swal from "sweetalert2";
 
+import { useDispatch } from "react-redux";
+import { logoutSuccess } from "../../authActions";
+
+
 function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
   const history = useHistory();
 
-  const logoutSubmit = (e) => {
+  const dispatch = useDispatch();
 
+
+  const logoutSubmit = (e) => {
     e.preventDefault();
 
     Swal.fire({
@@ -33,12 +39,9 @@ function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
       confirmButtonText: "Yes",
     }).then((result) => {
       if (result.isConfirmed) {
-
         axios.post(`/api/logout`).then(function (res) {
           if (res.data.status === 200) {
-
-            localStorage.removeItem("auth_token");
-            localStorage.removeItem("auth_name");
+            dispatch(logoutSuccess());
 
             Swal.fire({
               icon: "success",
@@ -52,7 +55,6 @@ function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
             setTimeout(() => {
               window.location.reload();
             }, 2000);
-            
           }
         });
       }
