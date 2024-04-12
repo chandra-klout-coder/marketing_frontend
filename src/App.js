@@ -25,7 +25,7 @@ import Dashboard from "./layouts/admin/Dashboard";
 import { Provider } from "react-redux";
 import store from "./store";
 
-axios.defaults.baseURL = "http://ec2-13-201-57-164.ap-south-1.compute.amazonaws.com";
+axios.defaults.baseURL = "https://api.klout.club/marketing/";
 // axios.defaults.baseURL = "http://localhost:8000/";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";

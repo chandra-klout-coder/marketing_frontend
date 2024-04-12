@@ -109,10 +109,6 @@ const routes = [
     name: "UploadMemberData",
     component: UploadMemberData,
   },
-
-
-
-
   {
     path: "/admin/send-notification-attendee/:id",
     exact: true,
