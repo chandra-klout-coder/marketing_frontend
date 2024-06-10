@@ -308,6 +308,8 @@ function AddAttendee(props) {
     }
 
     if (Object.keys(fieldErrors).length === 0) {
+
+      
       setIsLoading(true);
 
       const formData = new FormData();

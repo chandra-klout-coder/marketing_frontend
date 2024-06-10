@@ -6,36 +6,23 @@ import axios from "axios";
 import swal from "sweetalert";
 import loadingGif from "../assets/images/load.gif";
 import backgroundImage from "../assets/images/2.jpg";
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { loginSuccess } from "../authActions";
 
 function Login() {
- 
   const history = useHistory();
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    
-    console.log('Before removal:', localStorage.getItem('auth_token'));
-    console.log('Before removal:', localStorage.getItem('auth_name'));
-
-    // Remove auth_token and auth_name from localStorage
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_name');
-
-    console.log('After removal:', localStorage.getItem('auth_token'));
-    console.log('After removal:', localStorage.getItem('auth_name'));
-
-
-    // Redirect to the login page
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_name");
     history.push("/login");
   }, [history]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
-  const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,12 +63,9 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Additional final validation (if needed)
     let hasErrors = false;
     const validationErrors = { ...errors };
 
-    // Validate email and password together (if needed)
     if (!email) {
       validationErrors.email = "Email is required";
       hasErrors = true;
@@ -112,20 +96,15 @@ function Login() {
 
     setIsLoading(true);
 
-    if (email != "" && password != "") {
+    if (email !== "" && password !== "") {
       axios
-        .post("/api/login", {
+        .post("/user/login", {
           email,
           password,
         })
         .then((res) => {
-          console.log("data", res);
-          if (res.data.status === 200) {
-
-            dispatch(loginSuccess(res.data.access_token));
-
-            // localStorage.setItem("auth_token", res.data.access_token);
-            // localStorage.setItem("auth_name", "user");
+          if (res.data.status === true) {
+            dispatch(loginSuccess(res.data));
 
             setErrors({});
 
@@ -135,14 +114,10 @@ function Login() {
             swal("Success", res.data.message, "success");
 
             history.push("/admin/dashboard");
-            
-          } else if (res.data.status === 401) {
-            swal("Warning", res.data.message, "warning");
-          } else {
-            //  setErrors(error.response.data.errors);
+          } else if (res.data.status === false) {
+            swal("Error", res.data.message, "error");
           }
         });
-      // });
     }
     setIsLoading(false);
   };
@@ -161,9 +136,8 @@ function Login() {
                     className="col-lg-6 d-none d-lg-block"
                     style={{
                       backgroundImage: `url(${backgroundImage})`,
-                      backgroundSize: "cover", // Adjust as needed
-                      backgroundPosition: "center", // Adjust as needed
-                      // Other styles...
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
                     }}
                   ></div>
                   <div className="col-lg-6">
@@ -178,15 +152,10 @@ function Login() {
                       <div>
                         <h1 className="h4 text-gray-900 mb-4">Welcome Back!</h1>
                         <p>
-                          <b>Lets Sign in to Get Started</b>
+                          <b>Let's Sign in to Get Started</b>
                         </p>
                       </div>
                       <form className="user mt-5 mb-5" onSubmit={handleSubmit}>
-                        <div className="form-group row">
-                          {/* {errors.error && <p classNameName="error">{errors.error}</p>} */}
-                          {success && <p className="success">{success}</p>}
-                        </div>
-
                         <div className="form-group">
                           <input
                             type="email"
@@ -239,16 +208,6 @@ function Login() {
                               ></i>
                             </span>
                           </div>
-                          {/* <span
-                            className="toggle-password-icon"
-                            onClick={handleTogglePassword}
-                          >
-                            <i
-                              className={
-                                showPassword ? "fas fa-eye-slash" : "fas fa-eye"
-                              }
-                            ></i>
-                          </span> */}
 
                           {errors.password && (
                             <div
@@ -262,30 +221,6 @@ function Login() {
                             </div>
                           )}
                         </div>
-                        {/* <div className="form-group">
-                          <div className="custom-control custom-checkbox small">
-                            <input
-                              type="checkbox"
-                              className="custom-control-input"
-                              id="customCheck"
-                            />
-                            <label
-                              className="custom-control-label"
-                              for="customCheck"
-                            >
-                              Remember Me
-                            </label>
-                          </div>
-                        </div> */}
-                        {/* <button
-                          className="btn btn-primary btn-user btn-block"
-                          style={{
-                            backgroundColor: "#F5007E",
-                            borderColor: "#F5007E",
-                          }}
-                        >
-                          Login
-                        </button> */}
 
                         <button
                           className="btn btn-primary btn-user btn-block"
@@ -301,31 +236,15 @@ function Login() {
                             "Login"
                           )}
                         </button>
-                        {/* <hr /> */}
-
-                        {/* <a
-                          href="index.html"
-                          className="btn btn-google btn-user btn-block"
-                        >
-                          <i className="fab fa-google fa-fw"></i> Login with Google
-                        </a> */}
-
-                        {/* <Link
-                          to=""
-                          className="btn btn-primary btn-user btn-block"
-                        >
-                          <i className="fab fa-linkedin fa-fw"></i>
-                          Login with LinkedIn
-                        </Link> */}
                       </form>
 
                       <hr />
 
-                      <div className="text-center mt-5 mb-3">
+                      {/* <div className="text-center mt-5 mb-3">
                         <Link to="/forgot-password" className="medium">
                           Forgot Password?
                         </Link>
-                      </div>
+                      </div> */}
 
                       <div className="text-center">
                         <Link to="/register" className="medium">

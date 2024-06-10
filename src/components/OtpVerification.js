@@ -42,9 +42,8 @@ const OtpVerification = ({
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
- 
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       event.preventDefault(); // Prevent default behavior (form submission)
     }
   };
@@ -52,25 +51,16 @@ const OtpVerification = ({
   const handleBlur = (e) => {
     const { name, value } = e.target;
 
-
     const fieldErrors = {};
 
     switch (name) {
-      case "mobile_otp":
+      case "otp":
         if (value === "") {
           fieldErrors[name] = "OTP is required.";
         } else if (!/^\d{6}$/.test(value)) {
           fieldErrors[name] = "Enter 6 Digits OTP.";
         }
         break;
-      case "email_otp":
-        if (value === "") {
-          fieldErrors[name] = "OTP is required.";
-        } else if (!/^\d{6}$/.test(value)) {
-          fieldErrors[name] = "Enter 6 Digits OTP.";
-        }
-        break;
-
       default:
         break;
     }
@@ -83,8 +73,10 @@ const OtpVerification = ({
 
   const handleInputFocus = (e) => {
     const { name, value } = e.target;
+
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
     setFormData((prevValidFields) => ({ ...prevValidFields, [name]: value }));
+
     e.target.classList.remove("is-invalid");
   };
 
@@ -95,27 +87,22 @@ const OtpVerification = ({
 
     formData.step = currentStep;
 
-    if (formData.mobile_otp === "" || /^\s*$/.test(formData.mobile_otp)) {
-      fieldErrors.mobile_otp = "OTP is required.";
-    } else if (!/^\d{6}$/.test(formData.mobile_otp)) {
-      fieldErrors.mobile_otp = "Enter 6 Digits OTP.";
-    }
-
-    if (formData.email_otp === "" || /^\s*$/.test(formData.email_otp)) {
-      fieldErrors.email_otp = "OTP is required.";
-    } else if (!/^\d{6}$/.test(formData.email_otp)) {
-      fieldErrors.email_otp = "Enter 6 Digits OTP.";
+    if (formData.otp === "" || /^\s*$/.test(formData.otp)) {
+      fieldErrors.otp = "OTP is required.";
+    } else if (!/^\d{6}$/.test(formData.otp)) {
+      fieldErrors.otp = "Enter 6 Digits OTP.";
     }
 
     if (Object.keys(fieldErrors).length === 0) {
       setIsLoading(true);
 
       await axios
-        .post(`/api/register`, formData, {
+        .post(`/user/register`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then((res) => {
-          if (res.data.status === 200) {
+          if (res.data.status === true) {
+
             swal("Success", res.data.message, "success");
 
             setErrors({});
@@ -125,16 +112,8 @@ const OtpVerification = ({
             history.push("/login");
           } else if (res.data.status === 401) {
             swal("Warning", res.data.message, "warning");
-          } else if (
-            res.data.status === 400 &&
-            res.data.error === "email_otp"
-          ) {
-            setErrors({ email_otp: res.data.message });
-          } else if (
-            res.data.status === 400 &&
-            res.data.error === "mobile_otp"
-          ) {
-            setErrors({ mobile_otp: res.data.message });
+          } else if (res.data.status === 400 && res.data.error === "otp") {
+            setErrors({ otp: res.data.message });
           }
         });
     } else {
@@ -197,59 +176,36 @@ const OtpVerification = ({
 
                   <div className="form-group">
                     <label>
-                      Enter the OTP received on Mobile - {"+91"}{" "}
-                      {formData.mobile_number}
+                      Enter the OTP received on Mobile :
+                      <strong>
+                        {" "}
+                        {"+91"}
+                        {"-"}
+                        {formData.mobile}
+                      </strong>{" "}
+                      or Email :<strong> {formData.email}</strong>
                     </label>
                     <input
                       type="text"
                       className={`form-control form-control-user col-4 ${
-                        errors.mobile_otp ? "is-invalid" : ""
+                        errors.otp ? "is-invalid" : ""
                       }`}
                       placeholder="OTP"
-                      name="mobile_otp"
+                      name="otp"
                       maxLength={6}
-                      value={formData.mobile_otp}
+                      value={formData.otp}
                       onChange={handleInput}
                       onBlur={handleBlur}
                       onFocus={handleInputFocus}
                     />
-                    {errors.mobile_otp && (
+                    {errors.otp && (
                       <div
                         className="invalid-feedback"
                         style={{ textAlign: "left", padding: " 0px 1.2rem" }}
                       >
-                        {errors.mobile_otp}
+                        {errors.otp}
                       </div>
                     )}
-                  </div>
-
-                  <div className="form-group mb-4">
-                    <label>
-                      Enter the OTP received on Email - {formData.email}
-                    </label>
-                    <input
-                      type="text"
-                      className={`form-control form-control-user col-4 ${
-                        errors.email_otp ? "is-invalid" : ""
-                      }`}
-                      placeholder="OTP"
-                      name="email_otp"
-                      maxLength={6}
-                      value={formData.email_otp}
-                      onChange={handleInput}
-                      onBlur={handleBlur}
-                      onFocus={handleInputFocus}
-                    />
-                    {errors.email_otp && (
-                      <div
-                        className="invalid-feedback"
-                        style={{ textAlign: "left", padding: " 0px 1.2rem" }}
-                      >
-                        {errors.email_otp}
-                      </div>
-                    )}
-
-                    <input type="hidden" name="step" value="2" />
                   </div>
 
                   <div>
@@ -267,10 +223,11 @@ const OtpVerification = ({
                         <button
                           type="submit"
                           onKeyDown={handleKeyDown}
-                          className="btn btn-primary btn-user btn-lg"
+                          className="btn btn-primary btn-user btn-lg mt-2"
                           style={{
                             backgroundColor: "#F5007E",
                             borderColor: "#F5007E",
+                            color: "#FFFFFF",
                           }}
                           disabled={isLoading}
                         >

@@ -1,28 +1,18 @@
 import axios from "axios";
 import React from "react";
-import {
-  BrowserRouter as Router,
-  useHistory,
-  Switch,
-  Route,
-  Link,
-} from "react-router-dom";
-import swal from "sweetalert";
-import routes from "../../routes/routes";
-import MasterLayout from "./MasterLayout";
-import Home from "../../components/Home";
-import AllEvent from "./AllEvent";
+import { useHistory, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import { useDispatch } from "react-redux";
 import { logoutSuccess } from "../../authActions";
 
+import { useSelector } from "react-redux";
 
 function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
   const history = useHistory();
 
+  const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
-
 
   const logoutSubmit = (e) => {
     e.preventDefault();
@@ -39,24 +29,30 @@ function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
       confirmButtonText: "Yes",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.post(`/api/logout`).then(function (res) {
-          if (res.data.status === 200) {
-            dispatch(logoutSuccess());
+        axios
+          .get(`/api/logout`, {
+            headers: {
+              "x-access-token": token,
+            },
+          })
+          .then(function (res) {
+            if (res.data.status === true) {
+              dispatch(logoutSuccess());
 
-            Swal.fire({
-              icon: "success",
-              title: res.data.message,
-              showConfirmButton: false,
-              timer: 1500,
-            });
+              Swal.fire({
+                icon: "success",
+                title: res.data.message,
+                showConfirmButton: false,
+                timer: 1500,
+              });
 
-            history.push("/login");
+              history.push("/login");
 
-            setTimeout(() => {
-              window.location.reload();
-            }, 2000);
-          }
-        });
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            }
+          });
       }
     });
   };
@@ -112,6 +108,7 @@ function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
             <i className="fa fa-solid fa-calendar"></i>
             <span>Members</span>
           </a>
+
           <div
             id="collapseTwo1"
             className="collapse"
@@ -125,12 +122,30 @@ function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
               <Link to="/admin/add-member" className="collapse-item">
                 Add New Member
               </Link>
+              <Link to="/admin/upload-members" className="collapse-item">
+                Upload Members
+              </Link>
             </div>
           </div>
         </li>
 
         {/* <!-- Divider --> */}
         <hr className="sidebar-divider" />
+
+        <li className="nav-item">
+          <Link className="nav-link" to="/admin/connects">
+            <i className="fas fa-solid fa-network-wired"></i>
+            <span>Connects</span>
+          </Link>
+        </li>
+
+        <li className="nav-item">
+          <Link className="nav-link" to="/admin/buy-credits">
+            {/* <i className="fas fa-hands-helping"></i> */}
+            <i className="fa fa-solid fa-money-bill"></i>
+            <span>Buy Credits</span>
+          </Link>
+        </li>
 
         {/* <!-- Heading --> */}
         <div className="sidebar-heading">ICP</div>
@@ -173,9 +188,9 @@ function Sidebar({ menuOpen, setMenuOpen, toggleMenu }) {
 
         {/* <!-- Nav Item - Charts --> */}
         <li className="nav-item">
-          <Link className="nav-link" to="/admin/get-help">
+          <Link className="nav-link" to="/admin/support">
             <i className="fas fa-hands-helping"></i>
-            <span>Get Help</span>
+            <span>Support</span>
           </Link>
         </li>
 

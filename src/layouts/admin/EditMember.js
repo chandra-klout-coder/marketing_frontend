@@ -14,7 +14,6 @@ function EditMember(props) {
 
   const [memberId, setMemberId] = useState("");
 
-
   const [errors, setErrors] = useState({});
 
   const [isLoading, setIsLoading] = useState(false);
@@ -28,8 +27,9 @@ function EditMember(props) {
     mobile_number: "",
   });
 
+
   useEffect(() => {
-    axios.get(`/api/members/${member_id}`).then((res) => {
+    axios.get(`/api/details`).then((res) => {
       if (res.data.status === 200) {
         setMemberId(res.data.data.id);
         setFormInput(res.data.data);
@@ -38,7 +38,7 @@ function EditMember(props) {
         history.push("/admin/all-member");
       }
     });
-  }, [member_id]);
+  },[member_id, history]);
 
   const handleInput = (e) => {
     e.persist();
@@ -187,9 +187,14 @@ function EditMember(props) {
     }
 
     if (Object.keys(fieldErrors).length === 0) {
+
+      
+      console.log("front", formInput);
+
       setIsLoading(true);
 
       const formData = new FormData();
+
 
       formData.append("id", formInput.member_id);
       formData.append("first_name", formInput.first_name);

@@ -45,9 +45,8 @@ function ForgotPassword() {
 
     if (email !== "") {
       try {
-        // Send a request to your Laravel API to initiate the password reset process
         const res = await axios.post("/api/forgot-password", { email });
-        // setSuccessMessage(response.data.message);
+    
 
         if (res.data.status === 200) {
 

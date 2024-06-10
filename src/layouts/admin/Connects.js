@@ -6,61 +6,45 @@ import Swal from "sweetalert2";
 import ReactPaginate from "react-paginate";
 import * as XLSX from "xlsx";
 
-function AllMember(props) {
+function Connects() {
   const token = useSelector((state) => state.auth.token);
+
+  const adminId = localStorage.getItem("userId");
 
   const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState([]);
+
+  const [memberFilter, setMemberFilter] = useState("");
 
   const [filteredMembers, setFilteredMembers] = useState([]);
 
   const [search, setSearch] = useState("");
   const [firstNameFilter, setFirstNameFilter] = useState("");
   const [emailIDFilter, setEmailIDFilter] = useState("");
+  const [phoneFilter, setPhoneFilter] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const [excelData, setExcelData] = useState([]);
-
   useEffect(() => {
     axios
-      .get("/user/admin-sub-admin-list", {
-        headers: {
-          "x-access-token": token,
-        },
-      })
+      .post(
+        "/user/get-all-users-points",
+        { adminId },
+        {
+          headers: {
+            "x-access-token": token,
+          },
+        }
+      )
       .then((res) => {
         if (res.data.status === true) {
-          setMembers(res.data.result.adminUsers);
-          setFilteredMembers(res.data.result.adminUsers);
-          setExcelData(res.data.result.usersData);
+          setMembers(res.data.result.usersWithPoints);
+          setFilteredMembers(res.data.result.usersWithPoints);
         }
+        setLoading(false);
       });
-  }, [token]);
-
-  useEffect(() => {
-    const filtered = members.filter((member) => {
-      const firstnameMatch = member.first_name
-        .toLowerCase()
-        .includes(firstNameFilter.toLowerCase());
-
-      const emailMatch = member.emailId
-        .toLowerCase()
-        .includes(emailIDFilter.toLowerCase());
-
-      // const phoneMatch = member.mobileNumber.includes(phoneFilter);
-
-      return firstnameMatch && emailMatch; //&& phoneMatch;
-    });
-
-    // Apply search filter
-    const searchFiltered = filtered.filter((member) =>
-      member.first_name.toLowerCase().includes(search.toLowerCase())
-    );
-
-    setFilteredMembers(searchFiltered);
-  }, [members, firstNameFilter, emailIDFilter, search]);
+  }, [token, adminId]);
 
   const handlePageChange = (selectedPage) => {
     setCurrentPage(selectedPage);
@@ -72,59 +56,19 @@ function AllMember(props) {
   );
 
   const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const worksheet = XLSX.utils.json_to_sheet(filteredMembers);
 
+    // Create a workbook and add the worksheet to it
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Members");
 
-    XLSX.writeFile(workbook, "all_member_list.csv");
+    // Export the workbook to Excel file
+    XLSX.writeFile(workbook, "connect_list.csv");
   };
 
   const capitalizeWord = (str) => {
     // return str.charAt(0).toUpperCase() + str.slice(1);
     return str;
-  };
-
-  const deleteMember = (e, id) => {
-    e.preventDefault();
-
-    const thisClicked = e.currentTarget;
-
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios
-          .delete(`/user/${id}`, {
-            headers: {
-              "x-access-token": token,
-            },
-          })
-          .then(function (res) {
-            Swal.fire({
-              icon: "success",
-              title: res.data.message,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-            thisClicked.closest("tr").remove();
-          })
-          .catch(function (error) {
-            Swal.fire({
-              icon: "error",
-              title: "An Error Occured!",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          });
-      }
-    });
   };
 
   let MemberList = "";
@@ -135,44 +79,56 @@ function AllMember(props) {
     MemberList = paginatedData.map((item) => {
       return (
         <tr key={item._id}>
-          <td>{capitalizeWord(item.first_name)}</td>
-          <td>{capitalizeWord(item.last_name)}</td>
-          <td>{capitalizeWord(item.emailId)}</td>
-          <td>{item.mobileNumber}</td>
+          {/* <td>{item.id}</td> */}
+          <td>
+            {capitalizeWord(item.first_name)} {capitalizeWord(item.last_name)}
+          </td>
           <td>{item.designation}</td>
           <td>
+            <strong>{item.totalContactPoints}</strong>
+          </td>
+          <td>
+            <strong>{item.totalChatPoints}</strong>
+          </td>
+          <td>
+            <strong>
+              {item.used_points} {" / "} {item.allocated_points}
+            </strong>
+          </td>
+
+          <td>
             <Link
-              to={`/admin/view-member/${item._id}`}
+              to={`/admin/allocate-points/${item.userId}`}
               data-toggle="tooltip"
               data-placement="bottom"
-              title="View Member Detail"
+              title="Allocate Points"
+              className="btn btn-sm btn-primary btn-circle"
+              style={{ borderRadius: "50%", color: "#fff" }}
+            >
+              <i class="fa fa-money"></i>
+            </Link>
+            &nbsp;
+            <Link
+              to={`/admin/view-contact-point-details/${item.userId}`}
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="View Connect Point Details"
+              className="btn btn-sm btn-secondary btn-circle"
+              style={{ borderRadius: "50%", color: "#fff" }}
+            >
+              <i class="fas fa-regular fa-address-book"></i>
+            </Link>
+            &nbsp;
+            <Link
+              to={`/admin/view-chat-point-details/${item.userId}`}
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="View Chat Point Details"
               className="btn btn-sm btn-info btn-circle"
               style={{ borderRadius: "50%", color: "#fff" }}
             >
-              <i className="fas fa-eye"></i>
+              <i class="far fa-regular fa-comment"></i>
             </Link>
-            &nbsp; &nbsp;
-            <Link
-              to={`/admin/edit-member/${item._id}`}
-              data-toggle="tooltip"
-              data-placement="bottom"
-              title="Edit Member"
-              className="btn btn-sm btn-primary btn-circle"
-              style={{ borderRadius: "50%" }}
-            >
-              <i className="fas fa-edit"></i>
-            </Link>
-            &nbsp; &nbsp;
-            <button
-              data-toggle="tooltip"
-              data-placement="bottom"
-              title="Delete Member"
-              className="btn btn-sm btn-danger btn-circle"
-              onClick={(e) => deleteMember(e, item._id)}
-              style={{ borderRadius: "50%" }}
-            >
-              <i className="fas fa-trash"></i>
-            </button>
           </td>
         </tr>
       );
@@ -182,10 +138,10 @@ function AllMember(props) {
   return (
     <>
       <div className="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 className="h3 mb-0 text-gray-800">All Members</h1>
+        <h1 className="h3 mb-0 text-gray-800">All Connects</h1>
 
         <div className="d-none d-sm-inline-block shadow-sm">
-          <Link
+          {/* <Link
             to={`/admin/add-member`}
             className="btn btn-sm btn-primary shadow-sm"
             style={{
@@ -196,15 +152,14 @@ function AllMember(props) {
             }}
           >
             <i className="fa fa-solid fa-plus"></i> &nbsp; Add Member
-          </Link>
+          </Link> */}
         </div>
       </div>
 
       <div className="row p-3">
-        {/* <div className="col-md-12"> */}
         <div className="card shadow mb-4">
           <div className="card-header py-3">
-            <h6 className="m-0 font-weight-bold text-primary">All Members</h6>
+            <h6 className="m-0 font-weight-bold text-primary">All Connects</h6>
           </div>
           <div className="card-body">
             <div className="row pb-4">
@@ -217,7 +172,7 @@ function AllMember(props) {
                   onChange={(e) => setMemberFilter(e.target.value)}
                 />
               </div> */}
-
+              {/* 
               <div className="col-2">
                 <input
                   type="text"
@@ -226,14 +181,12 @@ function AllMember(props) {
                   className="form-control"
                   onChange={(e) => setFirstNameFilter(e.target.value)}
                 />
-              </div>
+              </div> */}
 
-              <div className="col-8"></div>
-
-              <div className="col-2">
+              <div className="col-3">
                 <button
                   onClick={exportToExcel}
-                  className="btn btn-success float-right"
+                  className="btn btn-success float-left"
                 >
                   <i className="fa fa-solid fa-download"></i> Export to Excel
                 </button>
@@ -244,11 +197,11 @@ function AllMember(props) {
               <table className="table table-hover" width="100%" cellSpacing="0">
                 <thead>
                   <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Mobile No.</th>
+                    <th>Name</th>
                     <th>Designation</th>
+                    <th>Contacts Viewed</th>
+                    <th>Chat Made</th>
+                    <th>Consumed/Allocated</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -296,9 +249,8 @@ function AllMember(props) {
           </div>
         </div>
       </div>
-      {/* </div> */}
     </>
   );
 }
 
-export default AllMember;
+export default Connects;

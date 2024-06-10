@@ -5,91 +5,52 @@ import axios from "axios";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./EventCard.css";
+import { useSelector } from "react-redux";
 
 function Dashboard() {
   const imageBaseUrl = process.env.REACT_APP_API_URL;
 
-  // const [events, setEvents] = useState([]);
-  const [totalEvents, setTotalEvents] = useState(0);
-  const [totalSponsors, setTotalSponsors] = useState(0);
-  const [totalAttendees, setTotalAttendees] = useState(0);
-  // const [upcomingEvents, setUpcomingEvents] = useState(0);
-  // const [upcomingEventsData, setUpcomingEventsData] = useState([]);
+  const token = useSelector((state) => state.auth.token);
+  const userId = localStorage.getItem("userId");
 
-  const settings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
-  };
+  const [totalCredits, setTotalCredits] = useState(0);
+  const [totalCreditUsed, setTotalCreditUsed] = useState(0);
+  const [totalCreditRemain, setTotalCreditRemain] = useState(0);
 
-  // useEffect(() => {
-  //   axios
-  //     .get("/api/totalevents")
-  //     .then((response) => {
-  //       setTotalEvents(response.data.total_events);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching event count:", error);
-  //     });
-
-  //   axios
-  //     .get("/api/totalattendeesOrganizer")
-  //     .then((response) => {
-  //       setTotalAttendees(response.data.total_attendees.length);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching attendee count:", error);
-  //     });
-
-  //   axios
-  //     .get("/api/totalsponsors")
-  //     .then((response) => {
-  //       setTotalSponsors(response.data.totalsponsors);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching attendee count:", error);
-  //     });
-
-  //   axios
-  //     .get("/api/upcomingevents")
-  //     .then((response) => {
-  //       setUpcomingEvents(response.data.upcoming_events);
-  //       setUpcomingEventsData(response.data.data);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching attendee count:", error);
-  //     });
-
-  //   axios.get("/api/events").then((res) => {
-  //     if (res.data.status === 200) {
-  //       setEvents(res.data.data);
-  //     }
-  //   });
-  // }, []);
+  useEffect(() => {
+    axios
+      .post(
+        "/user/getUserPoints",
+        { userId },
+        {
+          headers: {
+            "x-access-token": token,
+          },
+        }
+      )
+      .then((response) => {
+        setTotalCredits(
+          response.data.result.userPoints.allocatedPoints.toLocaleString()
+        );
+        setTotalCreditUsed(
+          response.data.result.userPoints.usedPoints.toLocaleString()
+        );
+        setTotalCreditRemain(
+          response.data.result.userPoints.remainPoints.toLocaleString()
+        );
+      })
+      .catch((error) => {
+        console.error("Error fetching event count:", error);
+      });
+  }, [token, userId]);
 
   return (
     <>
       {/* <!-- Page Heading --> */}
       <div className="d-sm-flex align-items-center justify-content-between m-4">
         <h1 className="h3 mb-0 text-gray-800">Usage Analytics</h1>
-        {/* <Link
-          to="/admin/add-event"
+        <Link
+          to="/admin/buy-credits"
           className="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
           style={{
             backgroundColor: "#F5007E",
@@ -98,8 +59,9 @@ function Dashboard() {
             borderRadius: "12px",
           }}
         >
-          <i className="fa fa-plus fa-sm mx-1"></i> Create New Event
-        </Link> */}
+          <i className="fa fa-plus fa-sm mx-1"></i>
+          Buy Credits
+        </Link>
       </div>
 
       {/* <!-- Content Row --> */}
@@ -119,10 +81,10 @@ function Dashboard() {
               <div className="row no-gutters align-items-center p-2">
                 <div className="col mr-2">
                   <div className="text-xs font-weight-bold mb-1 ">
-                    <h6>Credits Used</h6>
+                    <h6>Total Credits</h6>
                   </div>
                   <div className="h5 mb-0 font-weight-bold text-gray-1000">
-                    7
+                    {totalCredits}
                   </div>
                 </div>
                 <div className="col-auto">
@@ -148,10 +110,10 @@ function Dashboard() {
               <div className="row no-gutters align-items-center p-2">
                 <div className="col mr-2">
                   <div className="text-xs font-weight-bold mb-1 ">
-                    <h6>Saved contacts</h6>
+                    <h6>Total Credits Used</h6>
                   </div>
                   <div className="h5 mb-0 font-weight-bold text-gray-1000">
-                    21
+                    {totalCreditUsed}
                   </div>
                 </div>
                 <div className="col-auto">
@@ -177,10 +139,10 @@ function Dashboard() {
               <div className="row no-gutters align-items-center p-2">
                 <div className="col mr-2">
                   <div className="text-xs font-weight-bold mb-1 ">
-                    <h6>Collected Details</h6>
+                    <h6>Total Credits Remain</h6>
                   </div>
                   <div className="h5 mb-0 font-weight-bold text-gray-1000">
-                    108
+                    {totalCreditRemain}
                   </div>
                 </div>
                 <div className="col-auto">
@@ -190,165 +152,116 @@ function Dashboard() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* <!-- Upcoming Events --> */}
-        {/* <div className="col-xl-3 col-md-6 mb-4">
-          <div
-            className="card border-left-danger shadow h-100 py-2"
-            style={{
-              background: "#FFFFFF 0% 0% no-repeat padding-box",
-              boxShadow: "0px 0px 25px #0000001A",
-              borderRadius: "20px",
-              opacity: "1",
-            }}
-          >
+      <div className="d-sm-flex align-items-center justify-content-between m-4">
+        <h1 className="h3 mb-0 text-gray-800">Credit</h1>
+        {/* <Link
+          to="/admin/add-event"
+          className="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
+          style={{
+            backgroundColor: "#F5007E",
+            borderColor: "#F5007E",
+            color: "white",
+            borderRadius: "12px",
+          }}
+        >
+          <i className="fa fa-plus fa-sm mx-1"></i> Create New Event
+        </Link> */}
+      </div>
+      <div className="row p-3">
+        <div className="col-12">
+          <div className="card shadow mb-4">
+            <div className="card-header py-3">
+              <h6 className="m-0 font-weight-bold text-primary">
+                Credit Details
+                <Link
+                  to="/admin/buy-credits"
+                  className="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
+                  style={{
+                    backgroundColor: "#F5007E",
+                    borderColor: "#F5007E",
+                    color: "white",
+                    borderRadius: "12px",
+                    float: "right",
+                  }}
+                >
+                  Buy Credits
+                </Link>
+              </h6>
+            </div>
+
             <div className="card-body">
-              <div className="row no-gutters align-items-center p-2">
-                <div className="col mr-2">
-                  <div className="text-xs font-weight-bold mb-1 ">
-                    <h6>Upcoming Events</h6>
-                  </div>
-                  <div className="h5 mb-0 font-weight-bold text-gray-1000">
-                    {upcomingEvents}
-                  </div>
-                </div>
-                <div className="col-auto">
-                  <i className="fas fa-support fa-table fa-2x text-gray-600"></i>
-                </div>
+              <div className="row pb-4"></div>
+
+              <div className="table-responsive">
+                <table
+                  className="table table-hover"
+                  width="100%"
+                  cellspacing="0"
+                >
+                  <thead>
+                    <tr>
+                      <th className="text-center">Transaction ID </th>
+                      <th className="text-center">Date & Time</th>
+                      <th className="text-center">Credit Bought</th>
+                      <th className="text-center">Credit Used</th>
+                      <th className="text-center">Credit Left</th>
+                      <th className="text-center">Valid Till</th>
+
+                      {/* <th>Action</th> */}
+                    </tr>
+                  </thead>
+                  {/* <tbody>{AttendeeList}</tbody> */}
+                  <tbody>
+                    {/* {AttendeeList.length > 0 ? (
+                    AttendeeList
+                  ) : ( */}
+                    <tr>
+                      <td className="text-center">108</td>
+                      <td className="text-center">03 June 2024 02:00 PM</td>
+                      <td className="text-center">1000</td>
+                      <td className="text-center">900</td>
+                      <td className="text-center">100</td>
+                      <td className="text-center">03 August 2024 02:00 PM</td>
+                    </tr>
+                    {/* )} */}
+                  </tbody>
+                </table>
+
+                {/* Pagination */}
+                <nav aria-label="Page navigation comments" className="mt-4">
+                  {/* {filteredAttendees.length > 0 && (
+                  <ReactPaginate
+                    previousLabel="<< Previous"
+                    nextLabel="Next >>"
+                    breakLabel="..."
+                    breakClassName="page-item"
+                    breakLinkClassName="page-link"
+                    pageRangeDisplayed={4}
+                    marginPagesDisplayed={2}
+                    pageCount={Math.ceil(
+                      filteredAttendees.length / itemsPerPage
+                    )}
+                    onPageChange={({ selected }) =>
+                      handlePageChange(selected + 1)
+                    }
+                    containerClassName="pagination"
+                    activeClassName="active"
+                    pageClassName="page-item"
+                    pageLinkClassName="page-link"
+                    previousClassName="page-item"
+                    previousLinkClassName="page-link"
+                    nextClassName="page-item"
+                    nextLinkClassName="page-link"
+                  />
+                )} */}
+                </nav>
               </div>
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
-
-      {/* <!-- Upcoming Events--> */}
-      {/* <div className="d-sm-flex align-items-center justify-content-between m-4">
-        <h1 className="h3 mb-0 text-gray-800">Upcoming Events</h1>
-        {upcomingEventsData.length > 0 && (
-          <Link
-            to="/admin/all-events"
-            className="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
-            style={{
-              backgroundColor: "#F5007E",
-              borderColor: "#F5007E",
-              color: "white",
-              borderRadius: "12px",
-            }}
-          >
-            View All Upcoming Events <i className="fa fa-arrow-right mx-1"></i>
-          </Link>
-        )}
-      </div> */}
-
-      {/* <div className="row m-3"> */}
-      {/* <!-- Area Chart --> */}
-      {/* {upcomingEventsData.length > 0 ? (
-          <div className="col-12">
-            <div>
-              <Slider {...settings}>
-                {upcomingEventsData.map((item) => (
-                  <div className="card event-card" key={item.id}>
-                    <img
-                      className="event-image"
-                      src={imageBaseUrl + item.image}
-                      alt={item.title}
-                      style={{
-                        borderRadius: "20px",
-                        objectFit: "cover",
-                        padding: "10px 8px",
-                        width: "100%",
-                      }}
-                    />
-
-                    <div className="card-body">
-                      <h5 className="card-title">{item.title}</h5>
-                      <p className="card-text">{item.event_date}</p>
-                      <p className="card-text">{item.location}</p>
-                      <Link
-                        to={`view-event/${item.id}`}
-                        className="btn btn-primary"
-                      >
-                        View Event
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </Slider>
-            </div>
-          </div>
-        ) : (
-          <div className="card event-card p-3 text-center">No Data Found</div>
-        )}
-      </div> */}
-
-      {/* <!-- All Events--> */}
-      {/* <div className="d-sm-flex d-flex align-items-center justify-content-between m-4">
-        <h1 className="h3 mb-0 text-gray-800">All Events</h1>
-        {events.length > 0 && (
-          <Link
-            to="/admin/all-events"
-            className="d-sm-inline-block btn btn-sm btn-primary shadow-sm"
-            style={{
-              backgroundColor: "rgb(220 210 68)",
-              borderColor: "rgb(220 210 68)",
-              color: "white",
-              borderRadius: "12px",
-            }}
-          >
-            View All Events <i className="fa fa-arrow-right"></i>
-          </Link>
-        )}
-      </div> */}
-
-      {/* <div className="row m-3"> */}
-      {/* <!-- Area Chart --> */}
-      {/* {events.length > 0 ? (
-          <div className="col-12">
-            <div>
-              <Slider {...settings}>
-                {events.map((item) => (
-                  <div className="card event-card" key={item.id}>
-                    <div class="events-sec">
-                      <img
-                        className="event-image"
-                        src={imageBaseUrl + item.image}
-                        alt={item.title}
-                        style={{
-                          borderRadius: "20px",
-                          objectFit: "cover",
-                          padding: "10px 8px",
-                          width: "100%",
-                        }}
-                      />
-
-                      <div class="slick-img-content card-body">
-                        {item.status === 0 && <p>Pending</p>}
-                        {item.status === 1 && <p>Live</p>}
-                        {item.status === 2 && <p>Cancelled</p>}
-                      </div>
-                    </div>
-
-                    <div className="card-body">
-                      <h5 className="card-title">{item.title}</h5>
-                      <p className="card-text">{item.event_date}</p>
-                      <p className="card-text">{item.location}</p>
-                      <Link
-                        to={`view-event/${item.id}`}
-                        className="btn btn-primary"
-                      >
-                        View Event
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </Slider>
-            </div>
-          </div>
-        ) : (
-          <div className="card event-card p-3 text-center"> No Data Found</div>
-        )}
-      </div> */}
-
       {/* <!-- /.container-fluid --> */}
       <div className="d-sm-flex align-items-center justify-content-between m-4">
         <h1 className="h3 mb-0 text-gray-800">Plans</h1>

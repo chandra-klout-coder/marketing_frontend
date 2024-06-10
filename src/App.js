@@ -23,18 +23,16 @@ import { useSelector } from "react-redux";
 import Dashboard from "./layouts/admin/Dashboard";
 
 import { Provider } from "react-redux";
+
 import store from "./store";
 
-axios.defaults.baseURL = "https://api.klout.club/marketing/";
-// axios.defaults.baseURL = "http://localhost:8000/";
+// axios.defaults.baseURL = "https://app.klout.club/api/marketing/";
+
+axios.defaults.baseURL = "http://localhost:8092/api/marketing/";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 axios.defaults.headers.post["Accept"] = "application/json";
-
 axios.defaults.withCredentials = false; //true
-
-// axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-// axios.defaults.headers.common['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept';
 
 axios.interceptors.request.use(function (config) {
   const token = localStorage.getItem("auth_token");
@@ -43,6 +41,7 @@ axios.interceptors.request.use(function (config) {
 });
 
 function App() {
+
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   return (

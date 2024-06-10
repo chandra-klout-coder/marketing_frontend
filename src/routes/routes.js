@@ -37,11 +37,18 @@ import TermsAndConditions from "../components/TermsAndConditions";
 import AllIcp from "../layouts/admin/AllIcp";
 import AddMember from "../layouts/admin/AddMember";
 import AllMember from "../layouts/admin/AllMember";
-import Express from "../layouts/admin/Express";
 import EditMember from "../layouts/admin/EditMember";
 import ViewMember from "../layouts/admin/ViewMember";
 import UploadData from "../layouts/admin/UploadData";
 import UploadMemberData from "../layouts/admin/UploadMemberData";
+import UploadMembers from "../layouts/admin/UploadMembers";
+import Connects from "../layouts/admin/Connects";
+import ViewChatPointDetails from "../layouts/admin/ViewChatPointDetails";
+import ViewContactPointDetails from "../layouts/admin/ViewContactPointDetails";
+import ViewChatDetails from "../layouts/admin/ViewChatDetails";
+import AllocatedPoints from "../layouts/admin/AllocatedPoints";
+import ForgotPassword from "../components/ForgotPassword";
+import BuyCredit from "../layouts/admin/BuyCredit";
 
 const routes = [
   { path: "/admin", exact: true, name: "Admin", component: Dashboard },
@@ -64,12 +71,17 @@ const routes = [
     name: "AllMember",
     component: AllMember,
   },
-
   {
     path: "/admin/add-member",
     exact: true,
     name: "AddMember",
     component: AddMember,
+  },
+  {
+    path: "/admin/upload-members",
+    exact: true,
+    name: "UploadMembers",
+    component: UploadMembers,
   },
   {
     path: "/admin/edit-member/:id",
@@ -85,10 +97,48 @@ const routes = [
     component: ViewMember,
   },
   {
-    path: "/admin/express",
+    path: "/forgot-password",
     exact: true,
-    name: "Express",
-    component: Express,
+    name: "ForgotPassword",
+    component: ForgotPassword,
+  },
+  {
+    path: "/admin/connects",
+    exact: true,
+    name: "Connects",
+    component: Connects,
+  },
+  {
+    path: "/admin/view-contact-point-details/:id",
+    exact: true,
+    name: "ViewContactPointDetails",
+    component: ViewContactPointDetails,
+  },
+  {
+    path: "/admin/view-chat-point-details/:id",
+    exact: true,
+    name: "ViewChatPointDetails",
+    component: ViewChatPointDetails,
+  },
+  {
+    path: "/admin/view-chat-details/:userId/:contactUserId",
+    exact: true,
+    name: "ViewChatDetails",
+    component: ViewChatDetails,
+  },
+
+  {
+    path: "/admin/allocate-points/:id",
+    exact: true,
+    name: "AllocatePoints",
+    component: AllocatedPoints,
+  },
+
+  {
+    path: "/admin/buy-credits",
+    exact: true,
+    name: "BuyCredit",
+    component: BuyCredit,
   },
 
   {

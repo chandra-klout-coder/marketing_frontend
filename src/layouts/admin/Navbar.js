@@ -1,40 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
-import swal from "sweetalert";
 import Swal from "sweetalert2";
-import BaseComponent from "bootstrap/js/dist/base-component";
 import Defaultuser from "../../assets/images/defaultuser.png";
 
 import { useDispatch } from "react-redux";
 import { logoutSuccess } from "../../authActions";
 
+import { useSelector } from "react-redux";
+
 function Navbar({ menuOpen, setMenuOpen, toggleMenu }) {
-  
   const history = useHistory();
 
   const dispatch = useDispatch();
+
+  const userId = useSelector((state) => state.auth.userId);
+  const token = useSelector((state) => state.auth.token);
 
   const imageBaseUrl = process.env.REACT_APP_API_URL;
 
   const [profile, setProfile] = useState([]);
 
   useEffect(() => {
-    axios.get(`/api/profile`).then((res) => {
-      if (res.data.status === 200) {
-        setProfile(res.data.user);
-      }
-    });
-  }, []);
+    axios
+      .post(
+        `/user/details`,
+        { userId },
+        {
+          headers: {
+            "x-access-token": token,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.status === 200) {
+          setProfile(res.data.user);
+        }
+      });
+  }, [token, userId]);
 
-  const capitalizeWord = (str) => {
-    if (str != "") {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-  };
+  // const capitalizeWord = (str) => {
+  //   if (str != "") {
+  //     return str.charAt(0).toUpperCase() + str.slice(1);
+  //   }
+  // };
 
   const logoutSubmit = (e) => {
-
     e.preventDefault();
 
     Swal.fire({
@@ -48,30 +59,31 @@ function Navbar({ menuOpen, setMenuOpen, toggleMenu }) {
       cancelButtonText: "No",
       confirmButtonText: "Yes",
     }).then((result) => {
-
       if (result.isConfirmed) {
+        axios
+          .get(`/user/logout`, {
+            headers: {
+              "x-access-token": token,
+            },
+          })
+          .then(function (res) {
+            if (res.data.status === true) {
+              dispatch(logoutSuccess());
 
-        axios.post(`/api/logout`).then(function (res) {
-         
-          if (res.data.status === 200) {
-           
-            dispatch(logoutSuccess());
+              Swal.fire({
+                icon: "success",
+                title: res.data.message,
+                showConfirmButton: false,
+                timer: 1500,
+              });
 
-            Swal.fire({
-              icon: "success",
-              title: res.data.message,
-              showConfirmButton: false,
-              timer: 1500,
-            });
+              history.push("/login");
 
-            history.push("/login");
-
-            setTimeout(() => {
-              window.location.reload();
-            }, 2000);
-
-          }
-        });
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            }
+          });
       }
     });
   };

@@ -14,28 +14,14 @@ function Register() {
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
-    mobile_number: "",
+    mobile: "",
     email: "",
     password: "",
     confirm_password: "",
-    company: "",
-    company_name: "",
-    designation: "",
-    designation_name: "",
-    pincode: "",
-    tnc: "",
     notifications: "",
-    address: "",
-    mobile_otp: "",
-    email_otp: "",
+    otp: "",
     step: "",
   });
-
-  const [errors, setErrors] = useState({});
-  const [success, setSuccess] = useState("");
-  const [csrfToken, setCsrfToken] = useState("");
-  const [companyInput, setCompanyInput] = useState(false);
-  const [designationInput, setDesignationInput] = useState(false);
 
   const [isTncChecked, setTncChecked] = useState(false);
 
@@ -46,8 +32,7 @@ function Register() {
   const prevStep = () => {
     setFormData((prevValidFields) => ({
       ...prevValidFields,
-      mobile_otp: "",
-      email_otp: "",
+      otp: "",
     }));
     setCurrentStep((prevStep) => prevStep - 1);
   };
@@ -64,14 +49,11 @@ function Register() {
           setFormData={setFormData}
           nextStep={nextStep}
           currentStep={currentStep}
-          companyInput={companyInput}
-          setCompanyInput={setCompanyInput}
-          designationInput={designationInput}
-          setDesignationInput={setDesignationInput}
           isTncChecked={isTncChecked}
           setTncChecked={setTncChecked}
         />
       )}
+
       {currentStep === 2 && (
         <OtpVerification
           onComplete={handleOtpVerificationComplete}
@@ -79,10 +61,6 @@ function Register() {
           setFormData={setFormData}
           prevStep={prevStep}
           currentStep={currentStep}
-          companyInput={companyInput}
-          setCompanyInput={setCompanyInput}
-          designationInput={designationInput}
-          setDesignationInput={setDesignationInput}
           isTncChecked={isTncChecked}
           setTncChecked={setTncChecked}
         />

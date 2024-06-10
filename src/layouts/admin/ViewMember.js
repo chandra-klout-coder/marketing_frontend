@@ -4,26 +4,30 @@ import axios from "axios";
 import swal from "sweetalert";
 import Defaultuser from "../../assets/images/defaultuser.png";
 
-function ViewMember() {
-  // const history = useHistory();
+import { useSelector } from "react-redux";
 
-  //Attendee ID
-  const id = useParams().id;
+function ViewMember() {
+  const userId = useParams().id;
+
+  const token = useSelector((state) => state.auth.token);
 
   const imageBaseUrl = process.env.REACT_APP_API_URL;
 
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    axios.get(`/api/members/${id}`).then((res) => {
-      if (res.data.status === 200) {
-        setUser(res.data.data);
-      } else if (res.data.status === 400) {
-        swal("Warning", res.data.message, "warning");
-        // history.push("admin/all-attendee");
-      }
-    });
-  }, [id]);
+    axios
+      .get(`/user/${userId}`, {
+        headers: {
+          "x-access-token": token,
+        },
+      })
+      .then((res) => {
+        if (res.data.status === true) {
+          setUser(res.data.result.user);
+        }
+      });
+  }, [userId, token]);
 
   const capitalizeWord = (str) => {
     // return str.charAt(0).toUpperCase() + str.slice(1);
@@ -72,20 +76,24 @@ function ViewMember() {
               <div className="col-12 col-md-12 col-lg-4 user-container p-4 right-border">
                 <p>
                   <b>Name : </b>
-                  {capitalizeWord(user.first_name)}{" "}
-                  {capitalizeWord(user.last_name)}
+                  {user.first_name} {user.last_name}
                 </p>
                 <p>
-                  <b> Email ID : </b> {user.email}
+                  <b> Email ID : </b> {user.emailId}
                 </p>
                 <p>
                   <b> Mobile No : </b>
-                  {user.mobile_number}
+                  {user.mobileNumber}
                 </p>
 
                 <p>
-                  <b>Company: </b>
-                  {capitalizeWord(user.company)}
+                  <b>Designation: </b>
+                  {user.designation}
+                </p>
+
+                <p>
+                  <b>Role: </b>
+                  {user.role}
                 </p>
               </div>
             </div>

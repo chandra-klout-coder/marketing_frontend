@@ -108,13 +108,13 @@ const MultiSelectDropdown = ({
   );
 };
 
-const countriesApiUrl = process.env.REACT_APP_API_URL + "/api/countries";
-const statesApiUrl = process.env.REACT_APP_API_URL + "/api/states";
-const citiesApiUrl = process.env.REACT_APP_API_URL + "/api/cities";
-const jobtitlesApiUrl = process.env.REACT_APP_API_URL + "/api/jobtitles";
-const industriesApiUrl = process.env.REACT_APP_API_URL + "/api/industries";
-const companiesApiUrl = process.env.REACT_APP_API_URL + "/api/companies";
-const employeeApiUrl = process.env.REACT_APP_API_URL + "/api/employee-size";
+const countriesApiUrl = "https://api.klout.club/api/countries";
+const statesApiUrl = "https://api.klout.club/api/states";
+const citiesApiUrl = "https://api.klout.club/api/cities";
+const jobtitlesApiUrl = "https://api.klout.club/api/jobtitles";
+const industriesApiUrl = "https://api.klout.club/api/industries";
+const companiesApiUrl = "https://api.klout.club/api/companies";
+const employeeApiUrl = "https://api.klout.club/api/employee-size";
 
 
 const AllIcp = () => {
