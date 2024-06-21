@@ -126,21 +126,18 @@ const routes = [
     name: "ViewChatDetails",
     component: ViewChatDetails,
   },
-
   {
     path: "/admin/allocate-points/:id",
     exact: true,
     name: "AllocatePoints",
     component: AllocatedPoints,
   },
-
   {
     path: "/admin/buy-credits",
     exact: true,
     name: "BuyCredit",
     component: BuyCredit,
   },
-
   {
     path: "/admin/all-icp",
     exact: true,

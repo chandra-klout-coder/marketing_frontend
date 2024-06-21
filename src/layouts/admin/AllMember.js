@@ -139,6 +139,7 @@ function AllMember(props) {
           <td>{capitalizeWord(item.last_name)}</td>
           <td>{capitalizeWord(item.emailId)}</td>
           <td>{item.mobileNumber}</td>
+          <td>{item.company}</td>
           <td>{item.designation}</td>
           <td>
             <Link
@@ -248,6 +249,7 @@ function AllMember(props) {
                     <th>Last Name</th>
                     <th>Email</th>
                     <th>Mobile No.</th>
+                    <th>Company</th>
                     <th>Designation</th>
                     <th>Action</th>
                   </tr>

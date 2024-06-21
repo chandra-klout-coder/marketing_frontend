@@ -89,6 +89,14 @@ function AddMember() {
         }
         break;
 
+      case "company":
+        if (value === "") {
+          fieldErrors[name] = "Comapny is required.";
+        } else if (value.length > 50) {
+          fieldErrors[name] = "Maximum 50 Characters Allowed.";
+        }
+        break;
+
       default:
         break;
     }
@@ -169,6 +177,16 @@ function AddMember() {
     }
 
     if (
+      formInput.company === "" ||
+      /^\s*$/.test(formInput.company) ||
+      formInput.company.length === 0
+    ) {
+      fieldErrors.company = "Company is required.";
+    } else if (formInput.company > 50) {
+      fieldErrors.company = "Maximum 50 Characters Allowed.";
+    }
+
+    if (
       formInput.password === "" ||
       /^\s*$/.test(formInput.password) ||
       formInput.password.length === 0
@@ -191,6 +209,7 @@ function AddMember() {
       formData.append("mobileNumber", formInput.mobileNumber);
       formData.append("password", formInput.password);
       formData.append("designation", formInput.designation);
+      formData.append("company", formInput.company);
       formData.append("role", formInput.role);
 
       axios
@@ -201,8 +220,8 @@ function AddMember() {
           },
         })
         .then((res) => {
-          
           if (res.data.status === true) {
+            
             swal("Success", res.data.message, "success");
 
             setFormInput({
@@ -485,6 +504,43 @@ function AddMember() {
                               }}
                             >
                               {errors.designation}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Company */}
+                    <div className="form-group row">
+                      <label
+                        forhtml="company"
+                        className="col-12 col-lg-2 col-form-label"
+                      >
+                        Company
+                      </label>
+                      <div className="col-12 col-lg-6 mb-3 mb-sm-0">
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            className={`form-control ${
+                              errors.company ? "is-invalid" : ""
+                            }`}
+                            placeholder="Company"
+                            name="company"
+                            value={formInput.company}
+                            onChange={handleInput}
+                            onBlur={handleBlur}
+                            onFocus={handleInputFocus}
+                          />
+
+                          {errors.company && (
+                            <div
+                              className="invalid-feedback"
+                              style={{
+                                textAlign: "left",
+                              }}
+                            >
+                              {errors.company}
                             </div>
                           )}
                         </div>

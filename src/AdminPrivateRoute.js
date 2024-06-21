@@ -17,6 +17,7 @@ function AdminPrivateRoute({ ...rest }) {
   useEffect(() => {
     const checkAuthenticated = async () => {
       try {
+
         if (!token) {
           history.push("/login");
           return;
@@ -25,12 +26,13 @@ function AdminPrivateRoute({ ...rest }) {
         const response = await axios.get(`/user/checkingAuthenticated`, {
           headers: {
             "x-access-token": token,
-          },
+          },  
         });
 
         if (response.status === 200) {
           setAuthenticated(true);
         }
+
       } catch (error) {
         if (error.response && error.response.status === 401) {
           setAuthenticated(false);

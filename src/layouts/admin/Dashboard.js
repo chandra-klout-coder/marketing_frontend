@@ -11,6 +11,7 @@ function Dashboard() {
   const imageBaseUrl = process.env.REACT_APP_API_URL;
 
   const token = useSelector((state) => state.auth.token);
+  
   const userId = localStorage.getItem("userId");
 
   const [totalCredits, setTotalCredits] = useState(0);

@@ -88,6 +88,19 @@ function ViewContactPointDetails() {
           <td>{item.emailId}</td>
           <td>{item.mobileNumber}</td>
 
+          <td>
+            <Link
+              to={`/admin/view-member/${item.userId}`}
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="View Member"
+              className="btn btn-sm btn-primary btn-circle"
+              style={{ borderRadius: "50%", color: "#fff" }}
+            >
+              <i class="fas fa-regular fa-eye"></i>
+            </Link>
+          </td>
+
           {/* <td>
             <Link
               to={`/admin/view-contact-point-details/${item.userId}`}
@@ -182,7 +195,7 @@ function ViewContactPointDetails() {
                     <th>Designation</th>
                     <th>Email</th>
                     <th>Mobile Number</th>
-                    {/* <th>Action</th> */}
+                    <th>Action</th>
                   </tr>
                 </thead>
 

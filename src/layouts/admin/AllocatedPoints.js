@@ -82,12 +82,6 @@ function AllocatedPoints() {
       formData.append("AllocatedPointsByUserId", AllocatedPointsByUserId);
       formData.append("userId", userId);
 
-      console.log("data", formData);
-
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-      }
-
       axios
         .post(`/user/allocatePoints`, formData, {
           headers: {
@@ -96,7 +90,9 @@ function AllocatedPoints() {
           },
         })
         .then((res) => {
+
           if (res.data.status === true) {
+
             swal("Success", res.data.message, "success");
 
             setFormInput({

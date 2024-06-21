@@ -92,6 +92,11 @@ function ViewMember() {
                 </p>
 
                 <p>
+                  <b>Company: </b>
+                  {user.company}
+                </p>
+
+                <p>
                   <b>Role: </b>
                   {user.role}
                 </p>
